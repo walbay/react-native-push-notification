@@ -28,9 +28,6 @@ import androidx.core.app.RemoteInput;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 
-import androidx.annotation.RequiresApi;
-import androidx.core.app.NotificationCompat;
-
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
@@ -273,13 +270,13 @@ public class RNPushNotificationHelper {
                         visibility = NotificationCompat.VISIBILITY_PRIVATE;
                 }
             }
-            
+
             String channel_id = bundle.getString("channelId");
 
             if(channel_id == null) {
                 channel_id = this.config.getNotificationDefaultChannelId();
             }
-            
+
             NotificationCompat.Builder notification = new NotificationCompat.Builder(context, channel_id)
                     .setContentTitle(title)
                     .setTicker(bundle.getString("ticker"))
@@ -287,7 +284,16 @@ public class RNPushNotificationHelper {
                     .setPriority(priority)
                     .setAutoCancel(bundle.getBoolean("autoCancel", true))
                     .setOnlyAlertOnce(bundle.getBoolean("onlyAlertOnce", false));
-            
+
+            boolean showProgress = bundle.getBoolean("showProgress");
+            int progress = (int) Math.floor(bundle.getDouble("progress"));
+            int maxProgress = (int) Math.floor(bundle.getDouble("maxProgress"));
+            boolean progressIndeterminate = bundle.getBoolean("progressIndeterminate");
+
+            if (showProgress) {
+                notification.setProgress(maxProgress, progress, progressIndeterminate);
+            }
+
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) { // API 24 and higher
                 // Restore showing timestamp on Android 7+
                 // Source: https://developer.android.com/reference/android/app/Notification.Builder.html#setShowWhen(boolean)
@@ -300,7 +306,7 @@ public class RNPushNotificationHelper {
                 // Changing Default mode of notification
                 notification.setDefaults(Notification.DEFAULT_LIGHTS);
             }
-      
+
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) { // API 20 and higher
               String group = bundle.getString("group");
 
@@ -324,21 +330,26 @@ public class RNPushNotificationHelper {
 
             String smallIcon = bundle.getString("smallIcon");
 
+            // can be android.R.drawable.stat_sys_download also
             if (smallIcon != null && !smallIcon.isEmpty()) {
-                smallIconResId = res.getIdentifier(smallIcon, "drawable", packageName);
-                if (smallIconResId == 0) {
-                    smallIconResId = res.getIdentifier(smallIcon, "mipmap", packageName);
+                String[] splitStr = smallIcon.split("\\.");
+                if (splitStr.length == 1) {
+                    smallIconResId = res.getIdentifier(smallIcon, "drawable", packageName);
+                    if (smallIconResId == 0) {
+                        smallIconResId = res.getIdentifier(smallIcon, "mipmap", packageName);
+                    }
+                } else if (splitStr.length == 4) {
+                    smallIconResId = res.getIdentifier(splitStr[3], splitStr[2], splitStr[0]);
                 }
-            } else if(smallIcon == null) {
+            }
+            if (smallIconResId == 0) {
                 smallIconResId = res.getIdentifier("ic_notification", "mipmap", packageName);
             }
-
             if (smallIconResId == 0) {
                 smallIconResId = res.getIdentifier("ic_launcher", "mipmap", packageName);
-
-                if (smallIconResId == 0) {
-                    smallIconResId = android.R.drawable.ic_dialog_info;
-                }
+            }
+            if (smallIconResId == 0) {
+                smallIconResId = android.R.drawable.ic_dialog_info;
             }
 
             notification.setSmallIcon(smallIconResId);
@@ -363,7 +374,7 @@ public class RNPushNotificationHelper {
                     largeIconBitmap = BitmapFactory.decodeResource(res, largeIconResId);
                 }
             }
-            
+
             if (largeIconBitmap != null){
               notification.setLargeIcon(largeIconBitmap);
             }
@@ -377,7 +388,7 @@ public class RNPushNotificationHelper {
             if (subText != null) {
                 notification.setSubText(subText);
             }
- 
+
             String bigText = bundle.getString("bigText");
 
             if (bigText == null) {
@@ -472,32 +483,32 @@ public class RNPushNotificationHelper {
 
                 vibratePattern = new long[]{0, vibration};
 
-                notification.setVibrate(vibratePattern); 
+                notification.setVibrate(vibratePattern);
             }
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) { 
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
               // Define the shortcutId
               String shortcutId = bundle.getString("shortcutId");
-              
+
               if (shortcutId != null) {
                 notification.setShortcutId(shortcutId);
               }
- 
+
               Long timeoutAfter = (long) bundle.getDouble("timeoutAfter");
-  
+
               if (timeoutAfter != null && timeoutAfter >= 0) {
                 notification.setTimeoutAfter(timeoutAfter);
               }
             }
 
             Long when = (long) bundle.getDouble("when");
-  
+
             if (when != null && when >= 0) {
               notification.setWhen(when);
             }
 
             notification.setUsesChronometer(bundle.getBoolean("usesChronometer", false));
-                
+
             notification.setChannelId(channel_id);
             notification.setContentIntent(pendingIntent);
 

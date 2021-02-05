@@ -54,6 +54,10 @@ public class RNPushNotificationAttributes {
     private static final String ALLOW_WHILE_IDLE = "allowWhileIdle";
     private static final String IGNORE_IN_FOREGROUND = "ignoreInForeground";
     private static final String USER_INFO = "userInfo";
+    private static final String SHOW_PROGRESS = "showProgress";
+    private static final String PROGRESS = "progress";
+    private static final String MAX_PROGRESS = "maxProgress";
+    private static final String PROGRESS_INDETERMINATE = "progressIndeterminate";
 
     private final String id;
     private final String message;
@@ -94,6 +98,10 @@ public class RNPushNotificationAttributes {
     private final boolean allowWhileIdle;
     private final boolean ignoreInForeground;
     private final String userInfo;
+    private final boolean showProgress;
+    private final int progress;
+    private final int maxProgress;
+    private final boolean progressIndeterminate;
 
     public RNPushNotificationAttributes(Bundle bundle) {
         id = bundle.getString(ID);
@@ -135,6 +143,10 @@ public class RNPushNotificationAttributes {
         allowWhileIdle = bundle.getBoolean(ALLOW_WHILE_IDLE);
         ignoreInForeground = bundle.getBoolean(IGNORE_IN_FOREGROUND);
         userInfo = bundle.getString(USER_INFO);
+        progress = bundle.getInt(PROGRESS);
+        progressIndeterminate = bundle.getBoolean(PROGRESS_INDETERMINATE);
+        maxProgress = bundle.getInt(MAX_PROGRESS);
+        showProgress = bundle.getBoolean(SHOW_PROGRESS);
     }
 
     private RNPushNotificationAttributes(JSONObject jsonObject) {
@@ -178,6 +190,10 @@ public class RNPushNotificationAttributes {
             allowWhileIdle = jsonObject.has(ALLOW_WHILE_IDLE) ? jsonObject.getBoolean(ALLOW_WHILE_IDLE) : false;
             ignoreInForeground = jsonObject.has(IGNORE_IN_FOREGROUND) ? jsonObject.getBoolean(IGNORE_IN_FOREGROUND) : false;
             userInfo = jsonObject.has(USER_INFO) ? jsonObject.getString(USER_INFO) : null;
+            progress = jsonObject.has(PROGRESS) ? jsonObject.getInt(PROGRESS) : 0;
+            progressIndeterminate = jsonObject.has(PROGRESS_INDETERMINATE) ? jsonObject.getBoolean(PROGRESS_INDETERMINATE) : false;
+            maxProgress = jsonObject.has(MAX_PROGRESS) ? jsonObject.getInt(MAX_PROGRESS) : 100;
+            showProgress = jsonObject.has(SHOW_PROGRESS) ? jsonObject.getBoolean(SHOW_PROGRESS): false;
         } catch (JSONException e) {
             throw new IllegalStateException("Exception while initializing RNPushNotificationAttributes from JSON", e);
         }
@@ -287,6 +303,10 @@ public class RNPushNotificationAttributes {
         bundle.putBoolean(ALLOW_WHILE_IDLE, allowWhileIdle);
         bundle.putBoolean(IGNORE_IN_FOREGROUND, ignoreInForeground);
         bundle.putString(USER_INFO, userInfo);
+        bundle.putBoolean(SHOW_PROGRESS, showProgress);
+        bundle.putInt(PROGRESS, progress);
+        bundle.putBoolean(PROGRESS_INDETERMINATE, progressIndeterminate);
+        bundle.putInt(MAX_PROGRESS, maxProgress);
         return bundle;
     }
 
@@ -332,6 +352,10 @@ public class RNPushNotificationAttributes {
             jsonObject.put(ALLOW_WHILE_IDLE, allowWhileIdle);
             jsonObject.put(IGNORE_IN_FOREGROUND, ignoreInForeground);
             jsonObject.put(USER_INFO, userInfo);
+            jsonObject.put(SHOW_PROGRESS, showProgress);
+            jsonObject.put(PROGRESS, progress);
+            jsonObject.put(PROGRESS_INDETERMINATE, progressIndeterminate);
+            jsonObject.put(MAX_PROGRESS, maxProgress);
         } catch (JSONException e) {
             Log.e(LOG_TAG, "Exception while converting RNPushNotificationAttributes to " +
                     "JSON. Returning an empty object", e);
@@ -383,6 +407,10 @@ public class RNPushNotificationAttributes {
                 ", allowWhileIdle=" + allowWhileIdle +
                 ", ignoreInForeground=" + ignoreInForeground +
                 ", userInfo=" + userInfo +
+                ", progress=" + progress +
+                ", progressIndeterminate=" + progressIndeterminate +
+                ", showProgress=" + showProgress +
+                ", maxProgress=" + maxProgress +
                 '}';
     }
 
