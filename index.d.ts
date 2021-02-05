@@ -133,7 +133,7 @@ export interface PushNotification {
     presentLocalNotification(notification: PushNotificationObject): void;
     scheduleLocalNotification(notification: PushNotificationScheduleObject): void;
     cancelLocalNotifications(details: { id: string }): void;
-    clearLocalNotification(tag: string, notificationID: number): void;
+    clearLocalNotification(tag: string | null, notificationID: number): void;
     cancelAllLocalNotifications(): void;
     setApplicationIconBadgeNumber(badgeCount: number): void;
     getApplicationIconBadgeNumber(
